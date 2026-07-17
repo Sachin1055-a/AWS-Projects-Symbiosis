@@ -1,0 +1,102 @@
+{
+  "fight-club": {
+    "title": "Fight Club",
+    "year": "1999",
+    "rating": "\u2605 8.8",
+    "match": "98% Match",
+    "genre": ["Psychological Thriller", "Drama", "Dark Comedy"],
+    "desc": "An insomniac office worker and a carefree soap salesman form an underground fight club that evolves into something much, much more dangerous.",
+    "videoKey": "fight-club.mp4",
+    "posterKey": "fight club.jpg"
+  },
+  "american-psycho": {
+    "title": "American Psycho",
+    "year": "2000",
+    "rating": "\u2605 7.6",
+    "match": "95% Match",
+    "genre": ["Psychological Thriller", "Satire", "Horror"],
+    "desc": "A wealthy New York investment banking executive hides his alternate psychopathic ego from his co-workers and friends as he delves deeper into his violent, hedonistic fantasies.",
+    "videoKey": "american-psycho.mp4",
+    "posterKey": "american psycho.jpg"
+  },
+  "tumbbad": {
+    "title": "Tumbbad",
+    "year": "2018",
+    "rating": "\u2605 8.2",
+    "match": "97% Match",
+    "genre": ["Horror", "Period Drama", "Indian Cinema"],
+    "desc": "A mythological story set across multiple decades following one family's obsession with a cursed treasure and the ancient god Hastar.",
+    "videoKey": "tumbbad.mp4",
+    "posterKey": "tumbbad.jpg"
+  },
+  "shawshank-redemption": {
+    "title": "The Shawshank Redemption",
+    "year": "1994",
+    "rating": "\u2605 9.3",
+    "match": "99% Match",
+    "genre": ["Drama", "Crime", "Hope"],
+    "desc": "Two imprisoned men bond over a number of years, finding solace and eventual redemption through acts of common decency.",
+    "videoKey": "shawshank-redemption.mp4",
+    "posterKey": "shawshank redemption.jpg"
+  },
+  "requiem-for-a-dream": {
+    "title": "Requiem for a Dream",
+    "year": "2000",
+    "rating": "\u2605 8.3",
+    "match": "93% Match",
+    "genre": ["Drama", "Psychological", "Addiction"],
+    "desc": "The drug-induced utopias of four Coney Island people are shattered when their addictions run deep.",
+    "videoKey": "requiem-for-a-dream.mp4",
+    "posterKey": "requiem for a dream.jpg"
+  },
+  "oldboy": {
+    "title": "Oldboy",
+    "year": "2003",
+    "rating": "\u2605 8.4",
+    "match": "96% Match",
+    "genre": ["Mystery Thriller", "Korean Cinema", "Neo-Noir"],
+    "desc": "After being imprisoned for fifteen years without explanation, Oh Dae-su is released only to find he must find his captor in five days.",
+    "videoKey": "oldboy.mp4",
+    "posterKey": "oldboy.jpg"
+  },
+  "midsommar": {
+    "title": "Midsommar",
+    "year": "2019",
+    "rating": "\u2605 7.1",
+    "match": "91% Match",
+    "genre": ["Folk Horror", "Drama", "Arthouse"],
+    "desc": "A couple travels to Sweden to visit a rural hometown's fabled midsummer festival, which quickly devolves into an increasingly disturbing folk nightmare.",
+    "videoKey": "midsommar.mp4",
+    "posterKey": "midsommar.jpg"
+  },
+  "blade-runner-2049": {
+    "title": "Blade Runner 2049",
+    "year": "2017",
+    "rating": "\u2605 8.0",
+    "match": "94% Match",
+    "genre": ["Sci-Fi", "Neo-Noir", "Dystopian"],
+    "desc": "A young blade runner's discovery of a long-buried secret leads him to track down former blade runner Rick Deckard, missing for thirty years.",
+    "videoKey": "blade-runner-2049.mp4",
+    "posterKey": "blad runner 2049.jpg"
+  },
+  "mother": {
+    "title": "Mother!",
+    "year": "2017",
+    "rating": "\u2605 6.6",
+    "match": "88% Match",
+    "genre": ["Psychological Horror", "Allegory", "Arthouse"],
+    "desc": "A couple's relationship is tested when uninvited guests arrive at their home, disrupting their tranquil existence.",
+    "videoKey": "mother.mp4",
+    "posterKey": "mother.jpg"
+  },
+  "a-tale-of-two-sisters": {
+    "title": "A Tale of Two Sisters",
+    "year": "2003",
+    "rating": "\u2605 7.8",
+    "match": "93% Match",
+    "genre": ["Korean Horror", "Mystery", "Psychological"],
+    "desc": "After returning home from a psychiatric hospital, two sisters are haunted by the tragedies that hang over their family.",
+    "videoKey": "A-Tale-of-Two-Sisters.mp4",
+    "posterKey": "a tale of two sisters.jpg"
+  }
+}

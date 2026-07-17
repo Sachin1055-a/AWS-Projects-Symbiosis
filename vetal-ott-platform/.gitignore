@@ -1,0 +1,24 @@
+# Dependencies
+node_modules/
+
+# Environment / secrets
+.env
+*.pem
+
+# PM2
+.pm2/
+
+# Logs
+*.log
+logs/
+
+# OS
+.DS_Store
+
+# Media
+*.mp4
+*.mkv
+*.avi
+*.mov
+public/posters/
+public/videos/

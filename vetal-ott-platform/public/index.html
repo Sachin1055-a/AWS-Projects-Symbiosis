@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Pyzilla — Stream the Extraordinary</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --black:#090909; --dark:#111111; --card:#181818; --hover:#222222;
+      --red:#E50914; --red2:#B20710; --gold:#F5C518;
+      --white:#FFFFFF; --grey:#8C8C8C; --light:#B3B3B3;
+      --bebas:'Bebas Neue',sans-serif;
+      --serif:'DM Serif Display',serif;
+      --body:'Inter',sans-serif;
+    }
+    html { scroll-behavior:smooth; }
+    body { background:var(--black); color:var(--white); font-family:var(--body); overflow-x:hidden; }
+    ::-webkit-scrollbar { width:4px; }
+    ::-webkit-scrollbar-track { background:var(--black); }
+    ::-webkit-scrollbar-thumb { background:var(--red); border-radius:2px; }
+
+    /* ── NAV ── */
+    nav {
+      position:fixed; top:0; left:0; right:0; z-index:200;
+      display:flex; justify-content:space-between; align-items:center;
+      padding:1.2rem 4rem;
+      background:linear-gradient(to bottom,rgba(0,0,0,0.95) 0%,transparent 100%);
+      transition:background 0.3s;
+    }
+    nav.scrolled { background:rgba(9,9,9,0.98); backdrop-filter:blur(8px); }
+
+    .nav-logo {
+      font-family:var(--bebas); font-size:2.2rem;
+      letter-spacing:0.08em; color:var(--red);
+      text-shadow:0 0 30px rgba(229,9,20,0.5); text-decoration:none;
+    }
+    .nav-logo span { color:var(--white); }
+
+    .nav-links { display:flex; gap:2rem; list-style:none; }
+    .nav-links a { text-decoration:none; color:var(--light); font-size:0.85rem; font-weight:500; transition:color 0.2s; }
+    .nav-links a:hover { color:var(--white); }
+
+    .nav-right { display:flex; align-items:center; gap:1rem; }
+
+    /* Rounded profile icon */
+    .nav-profile {
+      width:36px; height:36px; border-radius:50%;
+      background:linear-gradient(135deg,var(--red),#8B0000);
+      display:flex; align-items:center; justify-content:center;
+      font-size:0.9rem; font-weight:700; cursor:pointer;
+      border:2px solid rgba(229,9,20,0.6);
+      transition:border-color 0.2s, transform 0.2s;
+      color:var(--white); position:relative;
+    }
+    .nav-profile:hover { border-color:var(--red); transform:scale(1.08); }
+
+    /* Profile dropdown */
+    .profile-dropdown {
+      display:none; position:absolute; top:calc(100% + 0.75rem); right:0;
+      background:#1a1a1a; border:1px solid rgba(255,255,255,0.1);
+      border-radius:6px; padding:0.5rem 0; min-width:160px;
+      box-shadow:0 8px 24px rgba(0,0,0,0.6);
+    }
+    .nav-profile:hover .profile-dropdown,
+    .nav-profile:focus-within .profile-dropdown { display:block; }
+    .profile-dropdown a {
+      display:block; padding:0.6rem 1.2rem;
+      font-size:0.82rem; color:var(--light);
+      text-decoration:none; transition:background 0.15s, color 0.15s;
+    }
+    .profile-dropdown a:hover { background:rgba(255,255,255,0.07); color:var(--white); }
+    .profile-dropdown hr { border:none; border-top:1px solid rgba(255,255,255,0.08); margin:0.3rem 0; }
+
+    /* ── HERO ── */
+    .hero {
+      position:relative; height:92vh; min-height:600px;
+      display:flex; align-items:flex-end; overflow:hidden;
+    }
+
+    /* Fight Club background image */
+    .hero-bg-img {
+      position:absolute; inset:0;
+      background-image: url('https://sachin-s3-02.s3.ap-south-1.amazonaws.com/movie/fight-club-background.jpg');
+      background-size:cover; background-position:center top;
+      transform:scale(1.04);
+      transition:transform 8s ease;
+    }
+    .hero-bg-img.loaded { transform:scale(1); }
+
+    /* Dark overlays on top of image */
+    .hero-overlay {
+      position:absolute; inset:0;
+      background:
+        linear-gradient(to right, rgba(9,9,9,0.92) 0%, rgba(9,9,9,0.55) 55%, rgba(9,9,9,0.15) 100%),
+        linear-gradient(to top,   rgba(9,9,9,1)    0%, transparent 45%);
+    }
+
+    .hero-content {
+      position:relative; z-index:2;
+      padding:0 4rem 5rem; max-width:600px;
+    }
+
+    .hero-badge {
+      display:inline-flex; align-items:center; gap:0.5rem;
+      background:var(--red); color:var(--white);
+      padding:0.25rem 0.75rem; font-size:0.7rem;
+      font-weight:700; letter-spacing:0.12em;
+      text-transform:uppercase; margin-bottom:1.2rem;
+    }
+
+    .hero-title {
+      font-family:var(--bebas); font-size:clamp(4rem,8vw,7rem);
+      line-height:0.95; letter-spacing:0.04em; margin-bottom:1rem;
+      text-shadow:0 4px 20px rgba(0,0,0,0.8);
+    }
+    .hero-title .red { color:var(--red); }
+
+    .hero-meta {
+      display:flex; align-items:center; gap:1rem;
+      margin-bottom:1rem; font-size:0.82rem; flex-wrap:wrap;
+    }
+    .hero-rating { color:var(--gold); font-weight:600; }
+    .hero-year { color:var(--light); }
+    .hero-dot { color:var(--grey); }
+    .hero-genre {
+      background:rgba(255,255,255,0.12); padding:0.15rem 0.6rem;
+      font-size:0.72rem; border-radius:2px; color:var(--light);
+    }
+
+    .hero-desc {
+      font-size:0.95rem; line-height:1.75; color:var(--light);
+      margin-bottom:2rem; max-width:480px;
+    }
+
+    .hero-actions { display:flex; gap:1rem; }
+
+    .btn-play {
+      display:inline-flex; align-items:center; gap:0.6rem;
+      background:var(--white); color:var(--black);
+      padding:0.75rem 2rem; font-weight:700; font-size:0.9rem;
+      cursor:pointer; border:none; transition:background 0.2s,transform 0.2s;
+      font-family:var(--body);
+    }
+    .btn-play:hover { background:rgba(255,255,255,0.85); transform:scale(1.02); }
+
+    .btn-info {
+      display:inline-flex; align-items:center; gap:0.6rem;
+      background:rgba(109,109,110,0.7); color:var(--white);
+      padding:0.75rem 2rem; font-weight:600; font-size:0.9rem;
+      cursor:pointer; border:none; transition:background 0.2s;
+      font-family:var(--body); backdrop-filter:blur(4px);
+    }
+    .btn-info:hover { background:rgba(109,109,110,0.5); }
+
+    /* ── SECTION ── */
+    .section { padding:3rem 4rem; }
+    .section-title {
+      font-family:var(--bebas); font-size:1.6rem; letter-spacing:0.08em;
+      margin-bottom:1.5rem; display:flex; align-items:center; gap:0.75rem;
+    }
+    .section-title .accent { color:var(--red); }
+    .section-title::after {
+      content:''; flex:1; height:1px;
+      background:linear-gradient(to right,rgba(229,9,20,0.3),transparent);
+    }
+
+    /* ── MOVIE ROW ── */
+    .movie-row {
+      display:flex; gap:0.75rem;
+      overflow-x:auto; padding-bottom:1rem;
+      scroll-snap-type:x mandatory;
+      scrollbar-width:thin; scrollbar-color:var(--red) transparent;
+    }
+    .movie-row::-webkit-scrollbar { height:3px; }
+    .movie-row::-webkit-scrollbar-thumb { background:var(--red); }
+
+    /* ── MOVIE CARD ── */
+    .movie-card {
+      flex:0 0 200px; scroll-snap-align:start;
+      position:relative; cursor:pointer;
+      border-radius:4px; overflow:hidden;
+      transition:transform 0.3s;
+    }
+    .movie-card:hover { transform:scale(1.08); z-index:10; }
+
+    .movie-poster {
+      width:200px; height:300px; object-fit:cover;
+      display:block; background:var(--card); transition:filter 0.3s;
+    }
+    .movie-card:hover .movie-poster { filter:brightness(0.45); }
+
+    .movie-overlay {
+      position:absolute; inset:0;
+      background:linear-gradient(to top,rgba(0,0,0,0.95) 0%,transparent 50%);
+      opacity:0; transition:opacity 0.3s;
+      display:flex; flex-direction:column;
+      justify-content:flex-end; padding:1rem;
+    }
+    .movie-card:hover .movie-overlay { opacity:1; }
+
+    .movie-overlay-title { font-family:var(--bebas); font-size:1.1rem; letter-spacing:0.06em; margin-bottom:0.3rem; }
+    .movie-overlay-meta { font-size:0.68rem; color:var(--light); display:flex; gap:0.5rem; align-items:center; margin-bottom:0.6rem; flex-wrap:wrap; }
+    .movie-overlay-rating { color:var(--gold); font-weight:700; }
+    .movie-overlay-genre { background:rgba(229,9,20,0.75); padding:0.1rem 0.4rem; border-radius:2px; font-size:0.62rem; }
+
+    .overlay-actions { display:flex; gap:0.5rem; }
+    .overlay-btn {
+      display:flex; align-items:center; justify-content:center;
+      width:32px; height:32px; border-radius:50%;
+      border:2px solid rgba(255,255,255,0.7);
+      background:transparent; color:var(--white);
+      font-size:0.75rem; cursor:pointer;
+      transition:background 0.2s, border-color 0.2s;
+    }
+    .overlay-btn:hover { background:rgba(255,255,255,0.2); border-color:var(--white); }
+    .overlay-btn.play-btn { background:var(--white); color:var(--black); border-color:var(--white); font-size:0.9rem; }
+    .overlay-btn.play-btn:hover { background:rgba(255,255,255,0.85); }
+
+    .movie-label {
+      position:absolute; bottom:0; left:0; right:0;
+      background:linear-gradient(to top,rgba(0,0,0,0.9),transparent);
+      padding:1.5rem 0.75rem 0.6rem; transition:opacity 0.3s;
+    }
+    .movie-card:hover .movie-label { opacity:0; }
+    .movie-label-title { font-size:0.78rem; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .movie-label-year { font-size:0.65rem; color:var(--grey); }
+
+    /* ── MODAL ── */
+    .modal-bg {
+      display:none; position:fixed; inset:0; z-index:500;
+      background:rgba(0,0,0,0.85); backdrop-filter:blur(6px);
+      align-items:center; justify-content:center;
+    }
+    .modal-bg.active { display:flex; }
+
+    .modal {
+      background:#181818; width:90%; max-width:860px;
+      border-radius:6px; overflow:hidden; position:relative;
+      animation:modalIn 0.25s ease;
+    }
+    @keyframes modalIn { from { transform:scale(0.94); opacity:0; } to { transform:scale(1); opacity:1; } }
+
+    .modal-video-wrap { position:relative; width:100%; aspect-ratio:16/9; background:#000; }
+    .modal-video { width:100%; height:100%; object-fit:cover; display:block; }
+    .modal-video-gradient { position:absolute; bottom:0; left:0; right:0; height:40%; background:linear-gradient(to top,#181818,transparent); }
+
+    .modal-close {
+      position:absolute; top:1rem; right:1rem; z-index:10;
+      width:36px; height:36px; border-radius:50%;
+      background:rgba(30,30,30,0.9); border:2px solid rgba(255,255,255,0.3);
+      color:var(--white); font-size:1rem; cursor:pointer;
+      display:flex; align-items:center; justify-content:center;
+      transition:background 0.2s;
+    }
+    .modal-close:hover { background:rgba(60,60,60,0.9); }
+
+    .modal-body { padding:1.5rem 2rem 2rem; }
+    .modal-title { font-family:var(--bebas); font-size:2.2rem; letter-spacing:0.06em; margin-bottom:0.5rem; }
+    .modal-meta { display:flex; align-items:center; gap:1rem; margin-bottom:1rem; font-size:0.82rem; flex-wrap:wrap; }
+    .modal-match { color:#46d369; font-weight:700; }
+    .modal-year { color:var(--light); }
+    .modal-hd { border:1px solid var(--grey); color:var(--light); padding:0.05rem 0.4rem; font-size:0.65rem; font-weight:700; }
+    .modal-rating-badge { background:var(--gold); color:#000; padding:0.1rem 0.5rem; font-size:0.72rem; font-weight:700; }
+    .modal-desc { font-size:0.88rem; color:var(--light); line-height:1.75; margin-bottom:1.2rem; }
+    .modal-tags { display:flex; gap:0.5rem; flex-wrap:wrap; margin-bottom:1.2rem; }
+    .modal-tag { background:rgba(255,255,255,0.08); color:var(--light); padding:0.25rem 0.75rem; font-size:0.72rem; border-radius:2px; }
+    .modal-actions { display:flex; gap:0.75rem; margin-bottom:1.5rem; }
+    .modal-play {
+      display:inline-flex; align-items:center; gap:0.5rem;
+      background:var(--white); color:var(--black);
+      padding:0.6rem 1.5rem; font-weight:700; font-size:0.88rem;
+      cursor:pointer; border:none; font-family:var(--body); transition:background 0.2s;
+    }
+    .modal-play:hover { background:rgba(255,255,255,0.85); }
+
+    /* ── FOOTER ── */
+    footer { background:var(--dark); padding:3rem 4rem; border-top:1px solid rgba(255,255,255,0.08); text-align:center; }
+    .footer-logo { font-family:var(--bebas); font-size:2rem; color:var(--red); letter-spacing:0.1em; margin-bottom:0.5rem; }
+    .footer-text { font-size:0.75rem; color:var(--grey); }
+    .footer-links { display:flex; justify-content:center; gap:2rem; margin:1rem 0; }
+    .footer-links a { font-size:0.75rem; color:var(--grey); text-decoration:none; }
+    .footer-links a:hover { color:var(--light); }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width:900px) {
+      nav { padding:1rem 1.5rem; }
+      .nav-links { display:none; }
+      .hero-content { padding:0 1.5rem 4rem; }
+      .section { padding:2rem 1.5rem; }
+      .movie-card { flex:0 0 150px; }
+      .movie-poster { width:150px; height:225px; }
+      footer { padding:2rem 1.5rem; }
+      .modal { width:95%; }
+      .modal-body { padding:1rem 1.2rem 1.5rem; }
+    }
+    @media (prefers-reduced-motion:reduce) {
+      .movie-card { transition:none; }
+      .hero-bg-img { transition:none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="navbar">
+  <a href="#" class="nav-logo">Py<span>zilla</span></a>
+  <ul class="nav-links">
+    <li><a href="#">Home</a></li>
+    <li><a href="#">Movies</a></li>
+    <li><a href="#">Thriller</a></li>
+    <li><a href="#">Horror</a></li>
+    <li><a href="#">Sci-Fi</a></li>
+  </ul>
+  <div class="nav-right">
+    <!-- Rounded profile icon with dropdown -->
+    <div class="nav-profile" tabindex="0">
+      P
+      <div class="profile-dropdown">
+        <a href="#">👤 My Profile</a>
+        <a href="#">❤️ Watchlist</a>
+        <a href="#">⚙️ Settings</a>
+        <hr/>
+        <a href="#">🚪 Sign Out</a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO — Fight Club Background -->
+<section class="hero">
+  <div class="hero-bg-img" id="heroBg"></div>
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <div class="hero-badge">⚡ Featured Today</div>
+    <div class="hero-title">Fight<br/><span class="red">Club</span></div>
+    <div class="hero-meta">
+      <span class="hero-rating">★ 8.8</span>
+      <span class="hero-dot">·</span>
+      <span class="hero-year">1999</span>
+      <span class="hero-dot">·</span>
+      <span class="hero-genre">Psychological Thriller</span>
+      <span class="hero-genre">Drama</span>
+    </div>
+    <p class="hero-desc">An insomniac office worker and a carefree soap salesman form an underground fight club that evolves into something much, much more dangerous. A raw, anarchic masterpiece that challenges everything you think you know about society.</p>
+    <div class="hero-actions">
+      <button class="btn-play" onclick="openModal('fight-club')">▶ Play Trailer</button>
+      <button class="btn-info" onclick="openModal('fight-club')">ⓘ More Info</button>
+    </div>
+  </div>
+</section>
+
+<!-- ALL MOVIES -->
+<section class="section">
+  <div class="section-title"><span class="accent">▶</span> All Movies</div>
+  <div class="movie-row">
+
+    <div class="movie-card" onclick="openModal('fight-club')">
+      <img src="https://sachin-s3-02.s3.ap-south-1.amazonaws.com/movie/fight club.jpg" alt="Fight Club" class="movie-poster"/>
+      <div class="movie-overlay">
+        <div class="movie-overlay-title">Fight Club</div>
+        <div class="movie-overlay-meta"><span class="movie-overlay-rating">★ 8.8</span><span>1999</span><span class="movie-overlay-genre">Thriller</span></div>
+        <div class="overlay-actions"><button class="overlay-btn play-btn">▶</button><button class="overlay-btn">+</button><button class="overlay-btn">♥</button></div>
+      </div>
+      <div class="movie-label"><div class="movie-label-title">Fight Club</div><div class="movie-label-year">1999</div></div>
+    </div>
+
+    <div class="movie-card" onclick="openModal('american-psycho')">
+      <img src="https://sachin-s3-02.s3.ap-south-1.amazonaws.com/movie/american psycho.jpg" alt="American Psycho" class="movie-poster"/>
+      <div class="movie-overlay">
+        <div class="movie-overlay-title">American Psycho</div>
+        <div class="movie-overlay-meta"><span class="movie-overlay-rating">★ 7.6</span><span>2000</span><span class="movie-overlay-genre">Thriller</span></div>
+        <div class="overlay-actions"><button class="overlay-btn play-btn">▶</button><button class="overlay-btn">+</button><button class="overlay-btn">♥</button></div>
+      </div>
+      <div class="movie-label"><div class="movie-label-title">American Psycho</div><div class="movie-label-year">2000</div></div>
+    </div>
+
+    <div class="movie-card" onclick="openModal('tumbbad')">
+      <img src="https://sachin-s3-02.s3.ap-south-1.amazonaws.com/movie/tumbbad.jpg" alt="Tumbbad" class="movie-poster"/>
+      <div class="movie-overlay">
+        <div class="movie-overlay-title">Tumbbad</div>
+        <div class="movie-overlay-meta"><span class="movie-overlay-rating">★ 8.2</span><span>2018</span><span class="movie-overlay-genre">Horror</span></div>
+        <div class="overlay-actions"><button class="overlay-btn play-btn">▶</button><button class="overlay-btn">+</button><button class="overlay-btn">♥</button></div>
+      </div>
+      <div class="movie-label"><div class="movie-label-title">Tumbbad</div><div class="movie-label-year">2018</div></div>
+    </div>
+
+    <div class="movie-card" onclick="openModal('shawshank-redemption')">
+      <img src="https://sachin-s3-02.s3.ap-south-1.amazonaws.com/movie/shawshank redemption.jpg" alt="Shawshank Redemption" class="movie-poster"/>
+      <div class="movie-overlay">
+        <div class="movie-overlay-title">Shawshank Redemption</div>
+        <div class="movie-overlay-meta"><span class="movie-overlay-rating">★ 9.3</span><span>1994</span><span class="movie-overlay-genre">Drama</span></div>
+        <div class="overlay-actions"><button class="overlay-btn play-btn">▶</button><button class="overlay-btn">+</button><button class="overlay-btn">♥</button></div>
+      </div>
+      <div class="movie-label"><div class="movie-label-title">Shawshank Redemption</div><div class="movie-label-year">1994</div></div>
+    </div>
+
+    <div class="movie-card" onclick="openModal('requiem-for-a-dream')">
+      <img src="https://sachin-s3-02.s3.ap-south-1.amazonaws.com/movie/requiem for a dream.jpg" alt="Requiem for a Dream" class="movie-poster"/>
+      <div class="movie-overlay">
+        <div class="movie-overlay-title">Requiem for a Dream</div>
+        <div class="movie-overlay-meta"><span class="movie-overlay-rating">★ 8.3</span><span>2000</span><span class="movie-overlay-genre">Drama</span></div>
+        <div class="overlay-actions"><button class="overlay-btn play-btn">▶</button><button class="overlay-btn">+</button><button class="overlay-btn">♥</button></div>
+      </div>
+      <div class="movie-label"><div class="movie-label-title">Requiem for a Dream</div><div class="movie-label-year">2000</div></div>
+    </div>
+
+    <div class="movie-card" onclick="openModal('oldboy')">
+      <img src="https://sachin-s3-02.s3.ap-south-1.amazonaws.com/movie/oldboy.jpg" alt="Oldboy" class="movie-poster"/>
+      <div class="movie-overlay">
+        <div class="movie-overlay-title">Oldboy</div>
+        <div class="movie-overlay-meta"><span class="movie-overlay-rating">★ 8.4</span><span>2003</span><span class="movie-overlay-genre">Thriller</span></div>
+        <div class="overlay-actions"><button class="overlay-btn play-btn">▶</button><button class="overlay-btn">+</button><button class="overlay-btn">♥</button></div>
+      </div>
+      <div class="movie-label"><div class="movie-label-title">Oldboy</div><div class="movie-label-year">2003</div></div>
+    </div>
+
+    <div class="movie-card" onclick="openModal('midsommar')">
+      <img src="https://sachin-s3-02.s3.ap-south-1.amazonaws.com/movie/midsommar.jpg" alt="Midsommar" class="movie-poster"/>
+      <div class="movie-overlay">
+        <div class="movie-overlay-title">Midsommar</div>
+        <div class="movie-overlay-meta"><span class="movie-overlay-rating">★ 7.1</span><span>2019</span><span class="movie-overlay-genre">Folk Horror</span></div>
+        <div class="overlay-actions"><button class="overlay-btn play-btn">▶</button><button class="overlay-btn">+</button><button class="overlay-btn">♥</button></div>
+      </div>
+      <div class="movie-label"><div class="movie-label-title">Midsommar</div><div class="movie-label-year">2019</div></div>
+    </div>
+
+    <div class="movie-card" onclick="openModal('blade-runner-2049')">
+      <img src="https://sachin-s3-02.s3.ap-south-1.amazonaws.com/movie/blad runner 2049.jpg" alt="Blade Runner 2049" class="movie-poster"/>
+      <div class="movie-overlay">
+        <div class="movie-overlay-title">Blade Runner 2049</div>
+        <div class="movie-overlay-meta"><span class="movie-overlay-rating">★ 8.0</span><span>2017</span><span class="movie-overlay-genre">Sci-Fi</span></div>
+        <div class="overlay-actions"><button class="overlay-btn play-btn">▶</button><button class="overlay-btn">+</button><button class="overlay-btn">♥</button></div>
+      </div>
+      <div class="movie-label"><div class="movie-label-title">Blade Runner 2049</div><div class="movie-label-year">2017</div></div>
+    </div>
+
+    <div class="movie-card" onclick="openModal('mother')">
+      <img src="https://sachin-s3-02.s3.ap-south-1.amazonaws.com/movie/mother.jpg" alt="Mother!" class="movie-poster"/>
+      <div class="movie-overlay">
+        <div class="movie-overlay-title">Mother!</div>
+        <div class="movie-overlay-meta"><span class="movie-overlay-rating">★ 6.6</span><span>2017</span><span class="movie-overlay-genre">Horror</span></div>
+        <div class="overlay-actions"><button class="overlay-btn play-btn">▶</button><button class="overlay-btn">+</button><button class="overlay-btn">♥</button></div>
+      </div>
+      <div class="movie-label"><div class="movie-label-title">Mother!</div><div class="movie-label-year">2017</div></div>
+    </div>
+
+    <div class="movie-card" onclick="openModal('a-tale-of-two-sisters')">
+      <img src="https://sachin-s3-02.s3.ap-south-1.amazonaws.com/movie/a tale of two sisters.jpg" alt="A Tale of Two Sisters" class="movie-poster"/>
+      <div class="movie-overlay">
+        <div class="movie-overlay-title">A Tale of Two Sisters</div>
+        <div class="movie-overlay-meta"><span class="movie-overlay-rating">★ 7.8</span><span>2003</span><span class="movie-overlay-genre">Horror</span></div>
+        <div class="overlay-actions"><button class="overlay-btn play-btn">▶</button><button class="overlay-btn">+</button><button class="overlay-btn">♥</button></div>
+      </div>
+      <div class="movie-label"><div class="movie-label-title">A Tale of Two Sisters</div><div class="movie-label-year">2003</div></div>
+    </div>
+
+  </div>
+</section>
+
+<!-- HORROR ROW -->
+<section class="section" style="padding-top:0;">
+  <div class="section-title"><span class="accent">👻</span> Horror &amp; Dark</div>
+  <div class="movie-row">
+    <div class="movie-card" onclick="openModal('tumbbad')"><img src="https://sachin-s3-02.s3.ap-south-1.amazonaws.com/movie/tumbbad.jpg" alt="Tumbbad" class="movie-poster"/><div class="movie-overlay"><div class="movie-overlay-title">Tumbbad</div><div class="movie-overlay-meta"><span class="movie-overlay-rating">★ 8.2</span><span>2018</span><span class="movie-overlay-genre">Horror</span></div><div class="overlay-actions"><button class="overlay-btn play-btn">▶</button><button class="overlay-btn">+</button></div></div><div class="movie-label"><div class="movie-label-title">Tumbbad</div><div class="movie-label-year">2018</div></div></div>
+    <div class="movie-card" onclick="openModal('midsommar')"><img src="https://sachin-s3-02.s3.ap-south-1.amazonaws.com/movie/midsommar.jpg" alt="Midsommar" class="movie-poster"/><div class="movie-overlay"><div class="movie-overlay-title">Midsommar</div><div class="movie-overlay-meta"><span class="movie-overlay-rating">★ 7.1</span><span>2019</span><span class="movie-overlay-genre">Folk Horror</span></div><div class="overlay-actions"><button class="overlay-btn play-btn">▶</button><button class="overlay-btn">+</button></div></div><div class="movie-label"><div class="movie-label-title">Midsommar</div><div class="movie-label-year">2019</div></div></div>
+    <div class="movie-card" onclick="openModal('mother')"><img src="https://sachin-s3-02.s3.ap-south-1.amazonaws.com/movie/mother.jpg" alt="Mother!" class="movie-poster"/><div class="movie-overlay"><div class="movie-overlay-title">Mother!</div><div class="movie-overlay-meta"><span class="movie-overlay-rating">★ 6.6</span><span>2017</span><span class="movie-overlay-genre">Horror</span></div><div class="overlay-actions"><button class="overlay-btn play-btn">▶</button><button class="overlay-btn">+</button></div></div><div class="movie-label"><div class="movie-label-title">Mother!</div><div class="movie-label-year">2017</div></div></div>
+    <div class="movie-card" onclick="openModal('a-tale-of-two-sisters')"><img src="https://sachin-s3-02.s3.ap-south-1.amazonaws.com/movie/a tale of two sisters.jpg" alt="A Tale of Two Sisters" class="movie-poster"/><div class="movie-overlay"><div class="movie-overlay-title">A Tale of Two Sisters</div><div class="movie-overlay-meta"><span class="movie-overlay-rating">★ 7.8</span><span>2003</span><span class="movie-overlay-genre">Horror</span></div><div class="overlay-actions"><button class="overlay-btn play-btn">▶</button><button class="overlay-btn">+</button></div></div><div class="movie-label"><div class="movie-label-title">A Tale of Two Sisters</div><div class="movie-label-year">2003</div></div></div>
+    <div class="movie-card" onclick="openModal('requiem-for-a-dream')"><img src="https://sachin-s3-02.s3.ap-south-1.amazonaws.com/movie/requiem for a dream.jpg" alt="Requiem" class="movie-poster"/><div class="movie-overlay"><div class="movie-overlay-title">Requiem for a Dream</div><div class="movie-overlay-meta"><span class="movie-overlay-rating">★ 8.3</span><span>2000</span><span class="movie-overlay-genre">Drama</span></div><div class="overlay-actions"><button class="overlay-btn play-btn">▶</button><button class="overlay-btn">+</button></div></div><div class="movie-label"><div class="movie-label-title">Requiem for a Dream</div><div class="movie-label-year">2000</div></div></div>
+  </div>
+</section>
+
+<!-- THRILLER ROW -->
+<section class="section" style="padding-top:0;">
+  <div class="section-title"><span class="accent">🔪</span> Thrillers &amp; Mind-Benders</div>
+  <div class="movie-row">
+    <div class="movie-card" onclick="openModal('fight-club')"><img src="https://sachin-s3-02.s3.ap-south-1.amazonaws.com/movie/fight club.jpg" alt="Fight Club" class="movie-poster"/><div class="movie-overlay"><div class="movie-overlay-title">Fight Club</div><div class="movie-overlay-meta"><span class="movie-overlay-rating">★ 8.8</span><span>1999</span><span class="movie-overlay-genre">Thriller</span></div><div class="overlay-actions"><button class="overlay-btn play-btn">▶</button><button class="overlay-btn">+</button></div></div><div class="movie-label"><div class="movie-label-title">Fight Club</div><div class="movie-label-year">1999</div></div></div>
+    <div class="movie-card" onclick="openModal('oldboy')"><img src="https://sachin-s3-02.s3.ap-south-1.amazonaws.com/movie/oldboy.jpg" alt="Oldboy" class="movie-poster"/><div class="movie-overlay"><div class="movie-overlay-title">Oldboy</div><div class="movie-overlay-meta"><span class="movie-overlay-rating">★ 8.4</span><span>2003</span><span class="movie-overlay-genre">Thriller</span></div><div class="overlay-actions"><button class="overlay-btn play-btn">▶</button><button class="overlay-btn">+</button></div></div><div class="movie-label"><div class="movie-label-title">Oldboy</div><div class="movie-label-year">2003</div></div></div>
+    <div class="movie-card" onclick="openModal('american-psycho')"><img src="https://sachin-s3-02.s3.ap-south-1.amazonaws.com/movie/american psycho.jpg" alt="American Psycho" class="movie-poster"/><div class="movie-overlay"><div class="movie-overlay-title">American Psycho</div><div class="movie-overlay-meta"><span class="movie-overlay-rating">★ 7.6</span><span>2000</span><span class="movie-overlay-genre">Thriller</span></div><div class="overlay-actions"><button class="overlay-btn play-btn">▶</button><button class="overlay-btn">+</button></div></div><div class="movie-label"><div class="movie-label-title">American Psycho</div><div class="movie-label-year">2000</div></div></div>
+    <div class="movie-card" onclick="openModal('shawshank-redemption')"><img src="https://sachin-s3-02.s3.ap-south-1.amazonaws.com/movie/shawshank redemption.jpg" alt="Shawshank" class="movie-poster"/><div class="movie-overlay"><div class="movie-overlay-title">Shawshank Redemption</div><div class="movie-overlay-meta"><span class="movie-overlay-rating">★ 9.3</span><span>1994</span><span class="movie-overlay-genre">Drama</span></div><div class="overlay-actions"><button class="overlay-btn play-btn">▶</button><button class="overlay-btn">+</button></div></div><div class="movie-label"><div class="movie-label-title">Shawshank Redemption</div><div class="movie-label-year">1994</div></div></div>
+    <div class="movie-card" onclick="openModal('blade-runner-2049')"><img src="https://sachin-s3-02.s3.ap-south-1.amazonaws.com/movie/blad runner 2049.jpg" alt="Blade Runner 2049" class="movie-poster"/><div class="movie-overlay"><div class="movie-overlay-title">Blade Runner 2049</div><div class="movie-overlay-meta"><span class="movie-overlay-rating">★ 8.0</span><span>2017</span><span class="movie-overlay-genre">Sci-Fi</span></div><div class="overlay-actions"><button class="overlay-btn play-btn">▶</button><button class="overlay-btn">+</button></div></div><div class="movie-label"><div class="movie-label-title">Blade Runner 2049</div><div class="movie-label-year">2017</div></div></div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">PYZILLA</div>
+  <div class="footer-links">
+    <a href="#">About</a><a href="#">Movies</a><a href="#">Privacy</a><a href="#">Contact</a>
+  </div>
+  <div class="footer-text">Hosted on AWS EC2 · Nginx · ap-south-1 · Media stored on Amazon S3 · sachin-s3-02/movie/</div>
+</footer>
+
+<!-- MODAL -->
+<div class="modal-bg" id="modal" onclick="handleModalClick(event)">
+  <div class="modal" id="modalBox">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div class="modal-video-wrap">
+      <video class="modal-video" id="modalVideo" controls poster="">
+        <source src="" type="video/mp4"/>
+      </video>
+      <div class="modal-video-gradient"></div>
+    </div>
+    <div class="modal-body">
+      <div class="modal-actions">
+        <button class="modal-play" onclick="document.getElementById('modalVideo').play()">▶ Play</button>
+      </div>
+      <div class="modal-title" id="modalTitle"></div>
+      <div class="modal-meta">
+        <span class="modal-match" id="modalMatch"></span>
+        <span class="modal-year" id="modalYear"></span>
+        <span class="modal-hd">HD</span>
+        <span class="modal-rating-badge" id="modalRating"></span>
+      </div>
+      <p class="modal-desc" id="modalDesc"></p>
+      <div class="modal-tags" id="modalTags"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const BASE = 'https://sachin-s3-02.s3.ap-south-1.amazonaws.com/movie/';
+
+  const movies = {
+    'fight-club': {
+      title:'Fight Club', year:'1999', rating:'★ 8.8', match:'98% Match',
+      genre:['Psychological Thriller','Drama','Dark Comedy'],
+      desc:'An insomniac office worker and a carefree soap salesman form an underground fight club that evolves into something much, much more dangerous. A raw, anarchic masterpiece that challenges everything you think you know about society.',
+      poster: BASE+'fight club.jpg', video: BASE+'fight-club.mp4'
+    },
+    'american-psycho': {
+      title:'American Psycho', year:'2000', rating:'★ 7.6', match:'95% Match',
+      genre:['Psychological Thriller','Satire','Horror'],
+      desc:'A wealthy New York investment banking executive hides his alternate psychopathic ego from his co-workers and friends as he delves deeper into his violent, hedonistic fantasies.',
+      poster: BASE+'american psycho.jpg', video: BASE+'american-psycho.mp4'
+    },
+    'tumbbad': {
+      title:'Tumbbad', year:'2018', rating:'★ 8.2', match:'97% Match',
+      genre:['Horror','Period Drama','Indian Cinema'],
+      desc:"A mythological story set across multiple decades following one family's obsession with a cursed treasure and the ancient god Hastar. A visually stunning Indian horror masterpiece.",
+      poster: BASE+'tumbbad.jpg', video: BASE+'tumbbad.mp4'
+    },
+    'shawshank-redemption': {
+      title:'The Shawshank Redemption', year:'1994', rating:'★ 9.3', match:'99% Match',
+      genre:['Drama','Crime','Hope'],
+      desc:'Two imprisoned men bond over a number of years, finding solace and eventual redemption through acts of common decency. Widely regarded as the greatest film ever made.',
+      poster: BASE+'shawshank redemption.jpg', video: BASE+'shawshank-redemption.mp4'
+    },
+    'requiem-for-a-dream': {
+      title:'Requiem for a Dream', year:'2000', rating:'★ 8.3', match:'93% Match',
+      genre:['Drama','Psychological','Addiction'],
+      desc:'The drug-induced utopias of four Coney Island people are shattered when their addictions run deep. A harrowing, visceral descent into the darkest corners of human obsession.',
+      poster: BASE+'requiem for a dream.jpg', video: BASE+'requiem-for-a-dream.mp4'
+    },
+    'oldboy': {
+      title:'Oldboy', year:'2003', rating:'★ 8.4', match:'96% Match',
+      genre:['Mystery Thriller','Korean Cinema','Neo-Noir'],
+      desc:'After being imprisoned for fifteen years without explanation, Oh Dae-su is released only to find he must find his captor in five days. A devastating masterpiece of revenge cinema.',
+      poster: BASE+'oldboy.jpg', video: BASE+'oldboy.mp4'
+    },
+    'midsommar': {
+      title:'Midsommar', year:'2019', rating:'★ 7.1', match:'91% Match',
+      genre:['Folk Horror','Drama','Arthouse'],
+      desc:"A couple travels to Sweden to visit a rural hometown's fabled midsummer festival. What begins as an idyllic retreat quickly devolves into an increasingly disturbing folk nightmare.",
+      poster: BASE+'midsommar.jpg', video: BASE+'midsommar.mp4'
+    },
+    'blade-runner-2049': {
+      title:'Blade Runner 2049', year:'2017', rating:'★ 8.0', match:'94% Match',
+      genre:['Sci-Fi','Neo-Noir','Dystopian'],
+      desc:"A young blade runner's discovery of a long-buried secret leads him to track down former blade runner Rick Deckard, missing for thirty years. A breathtaking visual masterpiece.",
+      poster: BASE+'blad runner 2049.jpg', video: BASE+'blade-runner-2049.mp4'
+    },
+    'mother': {
+      title:'Mother!', year:'2017', rating:'★ 6.6', match:'88% Match',
+      genre:['Psychological Horror','Allegory','Arthouse'],
+      desc:"A couple's relationship is tested when uninvited guests arrive at their home, disrupting their tranquil existence. A deeply unsettling, divisive, and unforgettable cinematic allegory.",
+      poster: BASE+'mother.jpg', video: BASE+'mother.mp4'
+    },
+    'a-tale-of-two-sisters': {
+      title:'A Tale of Two Sisters', year:'2003', rating:'★ 7.8', match:'93% Match',
+      genre:['Korean Horror','Mystery','Psychological'],
+      desc:"After returning home from a psychiatric hospital, two sisters are haunted by the tragedies that hang over their family. One of Korea's most haunting psychological horror films.",
+      poster: BASE+'a tale of two sisters.jpg', video: BASE+'A-Tale-of-Two-Sisters.mp4'
+    }
+  };
+
+  function openModal(id) {
+    const m = movies[id];
+    if (!m) return;
+    document.getElementById('modalTitle').textContent = m.title;
+    document.getElementById('modalYear').textContent = m.year;
+    document.getElementById('modalRating').textContent = m.rating;
+    document.getElementById('modalMatch').textContent = m.match;
+    document.getElementById('modalDesc').textContent = m.desc;
+    document.getElementById('modalTags').innerHTML = m.genre.map(g => `<span class="modal-tag">${g}</span>`).join('');
+    const video = document.getElementById('modalVideo');
+    video.poster = m.poster;
+    video.src = m.video;
+    video.load();
+    document.getElementById('modal').classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeModal() {
+    const video = document.getElementById('modalVideo');
+    video.pause(); video.src = '';
+    document.getElementById('modal').classList.remove('active');
+    document.body.style.overflow = '';
+  }
+
+  function handleModalClick(e) {
+    if (e.target === document.getElementById('modal')) closeModal();
+  }
+
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+  // Navbar scroll
+  window.addEventListener('scroll', () => {
+    document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 50);
+  });
+
+  // Hero background — load from S3
+  window.addEventListener('load', () => {
+    const bg = document.getElementById('heroBg');
+    const img = new Image();
+    img.onload = () => {
+      bg.style.backgroundImage = `url('${img.src}')`;
+      setTimeout(() => bg.classList.add('loaded'), 100);
+    };
+    img.src = BASE + 'fight-club-background.jpg';
+  });
+</script>
+</body>
+</html>

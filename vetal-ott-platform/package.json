@@ -1,0 +1,21 @@
+{
+  "name": "vetal-ott-platform",
+  "version": "1.0.0",
+  "description": "Pyzilla — a curated dark-cinema streaming platform hosted on AWS EC2 with S3 pre-signed URL media delivery.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "pm2:start": "pm2 start ecosystem.config.js",
+    "pm2:restart": "pm2 restart pyzilla",
+    "pm2:logs": "pm2 logs pyzilla"
+  },
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.550.0",
+    "@aws-sdk/s3-request-presigner": "^3.550.0",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
