@@ -1,0 +1,13 @@
+# Python
+__pycache__/
+*.pyc
+venv/
+.venv/
+
+# AWS
+.aws/
+*.pem
+.last_deploy
+
+# OS
+.DS_Store

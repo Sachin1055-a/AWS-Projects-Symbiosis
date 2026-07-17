@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My AWS Static Website</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font-family:'Segoe UI',sans-serif;
+    background:linear-gradient(135deg,#667eea,#764ba2);
+    min-height:100vh;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .card {
+    background:white; border-radius:24px;
+    padding:48px; text-align:center;
+    box-shadow:0 20px 60px rgba(0,0,0,0.2);
+    max-width:500px; width:90%;
+  }
+  .icon { font-size:4rem; margin-bottom:16px; }
+  h1 { font-size:2rem; color:#2d3748; margin-bottom:12px; }
+  p  { color:#718096; font-size:1rem; line-height:1.7; margin-bottom:24px; }
+  .badge {
+    display:inline-block;
+    background:linear-gradient(135deg,#667eea,#764ba2);
+    color:white; padding:10px 28px;
+    border-radius:30px; font-weight:600; font-size:0.9rem;
+  }
+  .footer { margin-top:32px; font-size:0.78rem; color:#a0aec0; }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="icon">☁️</div>
+  <h1>Hello from AWS S3!</h1>
+  <p>This static website is hosted on Amazon S3 and was deployed automatically using a Python boto3 script. No manual clicks required!</p>
+  <span class="badge">🚀 Hosted on S3</span>
+  <div class="footer">Automated with Python + boto3 · AWS Static Hosting</div>
+</div>
+</body>
+</html>
