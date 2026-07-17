@@ -1,0 +1,10 @@
+# Python
+__pycache__/
+*.pyc
+
+# AWS
+.aws/
+*.pem
+
+# OS
+.DS_Store

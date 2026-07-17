@@ -1,0 +1,4 @@
+# boto3 is included in the Lambda Python runtime by default —
+# no layer or packaging needed for this function.
+# Listed here only for local linting/testing reference.
+boto3>=1.34.0
