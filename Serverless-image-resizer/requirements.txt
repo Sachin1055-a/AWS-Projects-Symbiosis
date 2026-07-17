@@ -1,0 +1,4 @@
+# These are the runtime dependencies packaged into the Lambda layer
+# (see build_layer.sh). Not installed locally for running the function,
+# since it only runs inside AWS Lambda.
+Pillow>=10.0.0
