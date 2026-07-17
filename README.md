@@ -7,7 +7,7 @@ A collection of hands-on AWS projects covering serverless automation, infrastruc
 ## 📁 Projects
 
 ### 1. Static Website Hosting Automation
-**Folder:** `project5-static-website-automation/`
+**Folder:** `static-website-automation/`
 
 A Python (boto3) script that fully automates deploying a static website on Amazon S3 — creating the bucket, configuring public read access, enabling static website hosting, and uploading site files, all with zero manual console clicks.
 
@@ -17,7 +17,7 @@ A Python (boto3) script that fully automates deploying a static website on Amazo
 ---
 
 ### 2. Serverless Image Resizer
-**Folder:** `project9-serverless-image-resizer/`
+**Folder:** `serverless-image-resizer/`
 
 An event-driven pipeline where uploading an image to one S3 bucket automatically triggers a Lambda function that resizes it (via Pillow) and saves the result to a second bucket — fully serverless, no EC2 or database involved.
 
@@ -27,7 +27,7 @@ An event-driven pipeline where uploading an image to one S3 bucket automatically
 ---
 
 ### 3. Automated EC2 Cost Optimizer
-**Folder:** `project6-automated-cost-optimizer/`
+**Folder:** `automated-cost-optimizer/`
 
 A scheduled Lambda function that inspects tagged EC2 instances every 30 minutes and automatically stops any that are idle (low CPU) or running outside defined business hours — a lightweight cost-governance tool with no frontend or database.
 
@@ -37,7 +37,7 @@ A scheduled Lambda function that inspects tagged EC2 instances every 30 minutes 
 ---
 
 ### 4. Automated AWS Resource Provisioning
-**Folder:** `project4-aws-resource-provisioning/`
+**Folder:** `aws-resource-provisioning/`
 
 A single boto3 script that provisions a complete environment — S3 bucket, IAM role + instance profile, EC2 key pair, security group, and a running EC2 instance — replacing manual console setup with one repeatable, idempotent-by-timestamp run.
 
@@ -81,7 +81,7 @@ A curated dark-cinema streaming platform with a Netflix-style frontend, hosted o
 
 ```
 AWS-Projects-Symbiosis/
-├── project5-static-website-automation/
+├── static-website-automation/
 │   ├── deploy.py
 │   ├── update.py
 │   ├── website/
@@ -90,18 +90,18 @@ AWS-Projects-Symbiosis/
 │   ├── requirements.txt
 │   └── README.md
 │
-├── project9-serverless-image-resizer/
+├── serverless-image-resizer/
 │   ├── lambda_function.py
 │   ├── build_layer.sh
 │   ├── requirements.txt
 │   └── README.md
 │
-├── project6-automated-cost-optimizer/
+├── automated-cost-optimizer/
 │   ├── lambda_function.py
 │   ├── requirements.txt
 │   └── README.md
 │
-├── project4-aws-resource-provisioning/
+├── aws-resource-provisioning/
 │   ├── provision.py
 │   ├── requirements.txt
 │   └── README.md
@@ -116,7 +116,7 @@ AWS-Projects-Symbiosis/
 │   ├── package.json
 │   └── README.md
 │
-└── README.md   ← you are here
+└── README.md  
 ```
 
 Each project folder is self-contained with its own dependencies and README covering detailed setup and deployment steps.
@@ -136,7 +136,6 @@ Each project folder is self-contained with its own dependencies and README cover
 
 **Sachin Chaudhari**
 Final-year B.Tech student, Artificial Intelligence and Machine Learning
-R.C. Patel Institute of Technology, Shirpur, Maharashtra
-Graduating 2027
+R.C. Patel Institute of Technology, Shirpur, Dhule, Maharashtra
 
 GitHub: [@Sachin1055-a](https://github.com/Sachin1055-a)
